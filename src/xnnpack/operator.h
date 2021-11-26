@@ -112,6 +112,7 @@ enum xnn_operator_type {
   xnn_operator_type_subtract_nd_qu8,
   xnn_operator_type_tanh_nc_qs8,
   xnn_operator_type_tanh_nc_qu8,
+  xnn_operator_type_transpose_x32,
   xnn_operator_type_truncation_nc_f32,
   xnn_operator_type_unpooling_nhwc_x32,
 };
@@ -372,6 +373,7 @@ struct xnn_operator {
     struct spmm_context spmm;
     struct subconv_context subconv;
     struct subgemm_context subgemm;
+    struct transpose_context transpose;
     struct f32_three_pass_softmax_context f32_three_pass_softmax;
     struct u8_softmax_context u8_softmax;
     struct univector_contiguous_context univector_contiguous;

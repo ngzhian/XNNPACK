@@ -51,6 +51,7 @@
 #include <xnnpack/rmax.h>
 #include <xnnpack/spmm.h>
 #include <xnnpack/unpool.h>
+#include <xnnpack/transpose.h>
 #include <xnnpack/vaddsub.h>
 #include <xnnpack/vbinary.h>
 #include <xnnpack/vcvt.h>
@@ -974,6 +975,11 @@ static void init(void) {
         .x4 = (xnn_zipc_ukernel_function) xnn_x32_zip_x4_ukernel__neon,
         .xm = (xnn_zipv_ukernel_function) xnn_x32_zip_xm_ukernel__neon,
       };
+
+      xnn_params.x32.transpose.transpose = xnn_x32_transpose_ukernel__2x4_scalar_int;
+      xnn_params.x32.transpose.transpose_memcpy = xnn_x32_transpose_ukernel__memcpy;
+      xnn_params.x32.transpose.memcpy = xnn_xx_copy_ukernel__memcpy;
+      xnn_params.x32.transpose.blocksize = 32;
       #ifndef XNN_NO_NCHW_OPERATORS
         xnn_params.x32.depthtospace2d_chw2hwc = (struct depthtospace2d_chw2hwc_parameters) {
           .ukernel = (xnn_depthtospace2d_chw2hwc_ukernel_function) xnn_x32_depthtospace2d_chw2hwc_ukernel__scalar,
@@ -1480,6 +1486,11 @@ static void init(void) {
         .x4 = (xnn_zipc_ukernel_function) xnn_x32_zip_x4_ukernel__scalar,
         .xm = (xnn_zipv_ukernel_function) xnn_x32_zip_xm_ukernel__scalar,
       };
+
+      xnn_params.x32.transpose.transpose = xnn_x32_transpose_ukernel__2x4_scalar_int;
+      xnn_params.x32.transpose.transpose_memcpy = xnn_x32_transpose_ukernel__memcpy;
+      xnn_params.x32.transpose.memcpy = xnn_xx_copy_ukernel__memcpy;
+      xnn_params.x32.transpose.blocksize = 32;
       #ifndef XNN_NO_NCHW_OPERATORS
         xnn_params.x32.depthtospace2d_chw2hwc = (struct depthtospace2d_chw2hwc_parameters) {
           .ukernel = (xnn_depthtospace2d_chw2hwc_ukernel_function) xnn_x32_depthtospace2d_chw2hwc_ukernel__scalar,
@@ -2766,6 +2777,11 @@ static void init(void) {
       .x4 = (xnn_zipc_ukernel_function) xnn_x32_zip_x4_ukernel__neon,
       .xm = (xnn_zipv_ukernel_function) xnn_x32_zip_xm_ukernel__neon,
     };
+
+    xnn_params.x32.transpose.transpose = xnn_x32_transpose_ukernel__4x4_aarch64_neon_tbl;
+    xnn_params.x32.transpose.transpose_memcpy = xnn_x32_transpose_ukernel__memcpy;
+    xnn_params.x32.transpose.memcpy = xnn_xx_copy_ukernel__memcpy;
+    xnn_params.x32.transpose.blocksize = 32;
     #ifndef XNN_NO_NCHW_OPERATORS
       xnn_params.x32.depthtospace2d_chw2hwc = (struct depthtospace2d_chw2hwc_parameters) {
         .ukernel = (xnn_depthtospace2d_chw2hwc_ukernel_function) xnn_x32_depthtospace2d_chw2hwc_ukernel__scalar,
@@ -4359,6 +4375,11 @@ static void init(void) {
       .x4 = (xnn_zipc_ukernel_function) xnn_x32_zip_x4_ukernel__sse2,
       .xm = (xnn_zipv_ukernel_function) xnn_x32_zip_xm_ukernel__sse2,
     };
+
+    xnn_params.x32.transpose.transpose = xnn_x32_transpose_ukernel__4x4_sse;
+    xnn_params.x32.transpose.transpose_memcpy = xnn_x32_transpose_ukernel__memcpy;
+    xnn_params.x32.transpose.memcpy = xnn_xx_copy_ukernel__memcpy;
+    xnn_params.x32.transpose.blocksize = 32;
     #ifndef XNN_NO_NCHW_OPERATORS
       xnn_params.x32.depthtospace2d_chw2hwc = (struct depthtospace2d_chw2hwc_parameters) {
         .ukernel = (xnn_depthtospace2d_chw2hwc_ukernel_function) xnn_x32_depthtospace2d_chw2hwc_ukernel__scalar,
@@ -5197,6 +5218,11 @@ static void init(void) {
       .x4 = (xnn_zipc_ukernel_function) xnn_x32_zip_x4_ukernel__wasmsimd,
       .xm = (xnn_zipv_ukernel_function) xnn_x32_zip_xm_ukernel__wasmsimd,
     };
+
+    xnn_params.x32.transpose.transpose = xnn_x32_transpose_ukernel__4x4_wasmsimd;
+    xnn_params.x32.transpose.transpose_memcpy = xnn_x32_transpose_ukernel__memcpy;
+    xnn_params.x32.transpose.memcpy = xnn_xx_copy_ukernel__memcpy;
+    xnn_params.x32.transpose.blocksize = 32;
     #ifndef XNN_NO_NCHW_OPERATORS
       xnn_params.x32.depthtospace2d_chw2hwc = (struct depthtospace2d_chw2hwc_parameters) {
         .ukernel = (xnn_depthtospace2d_chw2hwc_ukernel_function) xnn_x32_depthtospace2d_chw2hwc_ukernel__scalar,
@@ -5849,6 +5875,11 @@ static void init(void) {
       .x4 = (xnn_zipc_ukernel_function) xnn_x32_zip_x4_ukernel__scalar,
       .xm = (xnn_zipv_ukernel_function) xnn_x32_zip_xm_ukernel__scalar,
     };
+
+    xnn_params.x32.transpose.transpose = xnn_x32_transpose_ukernel__2x4_scalar_int;
+    xnn_params.x32.transpose.transpose_memcpy = xnn_x32_transpose_ukernel__memcpy;
+    xnn_params.x32.transpose.memcpy = xnn_xx_copy_ukernel__memcpy;
+    xnn_params.x32.transpose.blocksize = 32;
     #ifndef XNN_NO_NCHW_OPERATORS
       xnn_params.x32.depthtospace2d_chw2hwc = (struct depthtospace2d_chw2hwc_parameters) {
         .ukernel = (xnn_depthtospace2d_chw2hwc_ukernel_function) xnn_x32_depthtospace2d_chw2hwc_ukernel__scalar,
@@ -6379,6 +6410,11 @@ static void init(void) {
       .x4 = (xnn_zipc_ukernel_function) xnn_x32_zip_x4_ukernel__scalar,
       .xm = (xnn_zipv_ukernel_function) xnn_x32_zip_xm_ukernel__scalar,
     };
+
+    xnn_params.x32.transpose.transpose = xnn_x32_transpose_ukernel__2x4_scalar_int;
+    xnn_params.x32.transpose.transpose_memcpy = xnn_x32_transpose_ukernel__memcpy;
+    xnn_params.x32.transpose.memcpy = xnn_xx_copy_ukernel__memcpy;
+    xnn_params.x32.transpose.blocksize = 32;
     #ifndef XNN_NO_NCHW_OPERATORS
       xnn_params.x32.depthtospace2d_chw2hwc = (struct depthtospace2d_chw2hwc_parameters) {
         .ukernel = (xnn_depthtospace2d_chw2hwc_ukernel_function) xnn_x32_depthtospace2d_chw2hwc_ukernel__scalar,

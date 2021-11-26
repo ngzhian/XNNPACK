@@ -1444,6 +1444,19 @@ enum xnn_status xnn_setup_fully_connected_nc_f32(
   float* output,
   pthreadpool_t threadpool);
 
+enum xnn_status xnn_create_transpose_nd_x32(
+    size_t num_dims,
+    const size_t* shape,
+    const size_t* output_perm,
+    uint32_t flags,
+    xnn_operator_t* transpose_op_out);
+
+enum xnn_status xnn_setup_transpose_nd_x32(
+    xnn_operator_t transpose_op,
+    const uint32_t* input,
+    uint32_t* output,
+    pthreadpool_t threadpool);
+
 enum xnn_status xnn_create_global_average_pooling_nwc_f32(
   size_t channels,
   size_t input_stride,

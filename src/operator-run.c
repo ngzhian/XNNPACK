@@ -21,6 +21,158 @@
 #include <xnnpack/compute.h>
 
 
+void xnn_compute_transpose_memcpy(
+    const struct transpose_context context[restrict XNN_MIN_ELEMENTS(1)],
+    size_t i,
+    size_t tile_i)
+{
+  const size_t element_size = context->element_size;
+  const void* x = (const void*) ((uintptr_t) context->a + i * element_size);
+  void* y = (void*) ((uintptr_t) context->b + i * element_size);;
+  const size_t n = tile_i * context->element_size;
+
+  context->memcpy_ukernel(n, x, y, NULL);
+}
+
+void xnn_compute_transpose(
+    const struct transpose_context context[restrict XNN_MIN_ELEMENTS(1)],
+    size_t mr_block_start,
+    size_t nr_block_start,
+    size_t mr_block_size,
+    size_t nr_block_size)
+{
+  const size_t element_size = context->element_size;
+  const size_t shape0 = context->shape[0];
+  const size_t shape1 = context->shape[1];
+  context->ukernel(
+      (const void*) ((uintptr_t) context->a + mr_block_start * element_size + element_size * nr_block_start * shape0),
+      (void*) ((uintptr_t) context->b + element_size * nr_block_start + element_size * mr_block_start * shape1),
+      shape0 * element_size,
+      shape1 * element_size,
+      mr_block_size,
+      nr_block_size);
+}
+
+void xnn_compute_transpose_3d(
+    const struct transpose_context context[restrict XNN_MIN_ELEMENTS(1)],
+    size_t i,
+    size_t j,
+    size_t k,
+    size_t tile_j,
+    size_t tile_k)
+{
+  const size_t element_size = context->element_size;
+  const size_t *loop = &context->loop[0];
+  const size_t *offset = &context->offset[0];
+  const size_t *stride = &context->stride[0];
+  const size_t input_stride = offset[loop[2]] * element_size;
+  const size_t output_stride = stride[loop[1]] * element_size;
+  const void *x = (const void*) ((uintptr_t) context->a +
+                                 (i * offset[loop[0]] + j * offset[loop[1]]) * element_size + k * input_stride);
+  void *y = (void*) ((uintptr_t) context->b + element_size * (i * stride[loop[0]] + j * stride[loop[1]] + k));
+
+  context->ukernel(
+      x,
+      y,
+      input_stride,
+      output_stride,
+      tile_j,
+      tile_k);
+}
+
+void xnn_compute_transpose_4d(
+    const struct transpose_context context[restrict XNN_MIN_ELEMENTS(1)],
+    size_t i,
+    size_t j,
+    size_t k,
+    size_t l,
+    size_t tile_k,
+    size_t tile_l)
+{
+  const size_t element_size = context->element_size;
+  const size_t *loop = &context->loop[0];
+  const size_t *offset = &context->offset[0];
+  const size_t *stride = &context->stride[0];
+  const size_t input_stride = offset[loop[3]] * element_size;
+  const size_t output_stride = stride[loop[2]] * element_size;
+  const void *x = (const void*) ((uintptr_t) context->a
+                                 + (i * offset[loop[0]] + j * offset[loop[1]] + k * offset[loop[2]])
+                                 * element_size + l * input_stride);
+  void *y = (void*) ((uintptr_t) context->b + element_size
+                     * (i * stride[loop[0]] + j * stride[loop[1]] + k * stride[loop[2]] + l));
+
+  context->ukernel(
+      x,
+      y,
+      input_stride,
+      output_stride,
+      tile_k,
+      tile_l);
+}
+
+void xnn_compute_transpose_5d(
+    const struct transpose_context context[restrict XNN_MIN_ELEMENTS(1)],
+    size_t i,
+    size_t j,
+    size_t k,
+    size_t l,
+    size_t m,
+    size_t tile_l,
+    size_t tile_m)
+{
+  const size_t element_size = context->element_size;
+  const size_t *loop = &context->loop[0];
+  const size_t *offset = &context->offset[0];
+  const size_t *stride = &context->stride[0];
+  const size_t input_stride = offset[loop[4]] * element_size;
+  const size_t output_stride = stride[loop[3]] * element_size;
+  const void *x = (const void*) ((uintptr_t) context->a
+                                 + (i * offset[loop[0]] + j * offset[loop[1]] + k * offset[loop[2]] + l * offset[loop[3]])
+                                 * element_size + m * input_stride);
+  void *y = (void*) ((uintptr_t) context->b + element_size
+                     * (i * stride[loop[0]] + j * stride[loop[1]] + k * stride[loop[2]] + l * stride[loop[3]] + m));
+
+  context->ukernel(
+      x,
+      y,
+      input_stride,
+      output_stride,
+      tile_l,
+      tile_m);
+}
+
+void xnn_compute_transpose_6d(
+    const struct transpose_context context[restrict XNN_MIN_ELEMENTS(1)],
+    size_t i,
+    size_t j,
+    size_t k,
+    size_t l,
+    size_t m,
+    size_t n,
+    size_t tile_m,
+    size_t tile_n)
+{
+  const size_t element_size = context->element_size;
+  const size_t *loop = &context->loop[0];
+  const size_t *offset = &context->offset[0];
+  const size_t *stride = &context->stride[0];
+  const size_t input_stride = offset[loop[5]] * element_size;
+  const size_t output_stride = stride[loop[4]] * element_size;
+  const void *x = (const void*) ((uintptr_t) context->a
+                                 + (i * offset[loop[0]] + j * offset[loop[1]] + k * offset[loop[2]] + l * offset[loop[3]]
+                                    + m * offset[loop[4]]) * element_size + n * input_stride);
+  void *y = (void*) ((uintptr_t) context->b + element_size
+                     * (i * stride[loop[0]] + j * stride[loop[1]] + k * stride[loop[2]] + l * stride[loop[3]] + m * stride[loop[4]] + n));
+
+  context->ukernel(
+      x,
+      y,
+      input_stride,
+      output_stride,
+      tile_m,
+      tile_n);
+}
+
 void xnn_compute_grouped_gemm(
     const struct gemm_context context[restrict XNN_MIN_ELEMENTS(1)],
     size_t group_index,

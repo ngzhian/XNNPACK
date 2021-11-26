@@ -61,6 +61,21 @@ struct compute_parameters {
   size_t tile[2];
 };
 
+struct transpose_context {
+  xnn_x32_transpose_ukernel_function ukernel;
+  xnn_univector_ukernel_function memcpy_ukernel;
+  const void* a;
+  void* b;
+  size_t n;
+  size_t element_size;
+  size_t num_dims;
+  size_t shape[XNN_MAX_TENSOR_DIMS];
+  size_t perm[XNN_MAX_TENSOR_DIMS];
+  size_t offset[XNN_MAX_TENSOR_DIMS];
+  size_t stride[XNN_MAX_TENSOR_DIMS];
+  size_t loop[XNN_MAX_TENSOR_DIMS];
+};
+
 struct gemm_context {
   size_t k_scaled;
   const void* a;
@@ -83,6 +98,56 @@ struct gemm_context {
 };
 
 #ifndef __cplusplus
+  XNN_PRIVATE void xnn_compute_transpose_memcpy(
+      const struct transpose_context context[restrict XNN_MIN_ELEMENTS(1)],
+      size_t i,
+      size_t tile_i);
+
+  XNN_PRIVATE void xnn_compute_transpose(
+      const struct transpose_context context[restrict XNN_MIN_ELEMENTS(1)],
+      size_t mr_block_start,
+      size_t nr_block_start,
+      size_t mr_block_size,
+      size_t nr_block_size);
+
+  XNN_PRIVATE void xnn_compute_transpose_3d(
+      const struct transpose_context context[restrict XNN_MIN_ELEMENTS(1)],
+      size_t i,
+      size_t j,
+      size_t k,
+      size_t tile_j,
+      size_t tile_k);
+
+  XNN_PRIVATE void xnn_compute_transpose_4d(
+      const struct transpose_context context[restrict XNN_MIN_ELEMENTS(1)],
+      size_t i,
+      size_t j,
+      size_t k,
+      size_t l,
+      size_t tile_k,
+      size_t tile_l);
+
+  XNN_PRIVATE void xnn_compute_transpose_5d(
+      const struct transpose_context context[restrict XNN_MIN_ELEMENTS(1)],
+      size_t i,
+      size_t j,
+      size_t k,
+      size_t l,
+      size_t m,
+      size_t tile_l,
+      size_t tile_m);
+
+  XNN_PRIVATE void xnn_compute_transpose_6d(
+      const struct transpose_context context[restrict XNN_MIN_ELEMENTS(1)],
+      size_t i,
+      size_t j,
+      size_t k,
+      size_t l,
+      size_t m,
+      size_t n,
+      size_t tile_m,
+      size_t tile_n);
+
   XNN_PRIVATE void xnn_compute_grouped_gemm(
       const struct gemm_context context[restrict XNN_MIN_ELEMENTS(1)],
       size_t group_index,
@@ -115,7 +180,7 @@ struct gemm_context {
         size_t nr_block_start,
         size_t mr_block_size,
         size_t nr_block_size);
-  #endif  // XNN_MAX_UARCH_TYPES > 1
+#endif  // XNN_MAX_UARCH_TYPES > 1
 #endif
 
 // Context for Sparse Matrix-Dense Matrix Multiplication.

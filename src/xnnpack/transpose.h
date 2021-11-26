@@ -47,6 +47,7 @@ DECLARE_X64_TRANSPOSE_UKERNEL_FUNCTION(xnn_x64_transpose_ukernel__2x2_reuse_swit
                             size_t block_width,         \
                             size_t block_height);
 
+DECLARE_X32_TRANSPOSE_UKERNEL_FUNCTION(xnn_x32_transpose_ukernel__memcpy)
 DECLARE_X32_TRANSPOSE_UKERNEL_FUNCTION(xnn_x32_transpose_ukernel__1x2_scalar_int)
 DECLARE_X32_TRANSPOSE_UKERNEL_FUNCTION(xnn_x32_transpose_ukernel__1x4_scalar_int)
 DECLARE_X32_TRANSPOSE_UKERNEL_FUNCTION(xnn_x32_transpose_ukernel__2x1_scalar_int)
