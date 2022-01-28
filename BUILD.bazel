@@ -128,6 +128,7 @@ PROD_SCALAR_PORTABLE_MICROKERNEL_SRCS = [
     "src/u8-lut32norm/scalar.c",
     "src/x8-lut/gen/lut-scalar-x4.c",
     "src/x32-depthtospace2d-chw2hwc/scalar.c",
+    "src/xx-transpose/memcpy.c",
     "src/xx-copy/memcpy.c",
 ]
 
@@ -265,6 +266,7 @@ PROD_SCALAR_AARCH32_MICROKERNEL_SRCS = [
     "src/x32-packx/x2-scalar.c",
     "src/x32-packx/x3-scalar.c",
     "src/x32-packx/x4-scalar.c",
+    "src/x32-transpose/gen/2x4-scalar-int.c",
     "src/x32-unpool/scalar.c",
     "src/x32-zip/x2-scalar.c",
     "src/x32-zip/x3-scalar.c",
@@ -398,6 +400,7 @@ PROD_SCALAR_WASM_MICROKERNEL_SRCS = [
     "src/x32-packx/x2-scalar.c",
     "src/x32-packx/x3-scalar.c",
     "src/x32-packx/x4-scalar.c",
+    "src/x32-transpose/gen/2x4-scalar-int.c",
     "src/x32-unpool/scalar.c",
     "src/x32-zip/x2-scalar.c",
     "src/x32-zip/x3-scalar.c",
@@ -541,6 +544,7 @@ PROD_SCALAR_RISCV_MICROKERNEL_SRCS = [
     "src/x32-packx/x2-scalar.c",
     "src/x32-packx/x3-scalar.c",
     "src/x32-packx/x4-scalar.c",
+    "src/x32-transpose/gen/2x4-scalar-int.c",
     "src/x32-unpool/scalar.c",
     "src/x32-zip/x2-scalar.c",
     "src/x32-zip/x3-scalar.c",
@@ -1322,6 +1326,7 @@ ALL_SCALAR_MICROKERNEL_SRCS = [
     "src/xx-copy/memcpy.c",
     "src/xx-fill/scalar-x16.c",
     "src/xx-pad/scalar.c",
+    "src/xx-transpose/memcpy.c",
 ]
 
 ALL_WASM_MICROKERNEL_SRCS = [
@@ -4014,6 +4019,7 @@ PROD_AARCH64_NEON_MICROKERNEL_SRCS = [
     "src/f32-vbinary/gen/vrdivc-minmax-neon-x8.c",
     "src/f32-vsqrt/gen/neon-sqrt-x4.c",
     "src/x8-lut/gen/lut-neon-tbx128x4-x64.c",
+    "src/x32-transpose/4x4-aarch64-tbl.c",
 ]
 
 ALL_AARCH64_NEON_MICROKERNEL_SRCS = [
@@ -4653,6 +4659,7 @@ PROD_SSE_MICROKERNEL_SRCS = [
     "src/f32-vunary/gen/vneg-sse-x8.c",
     "src/f32-vunary/gen/vsqr-sse-x8.c",
     "src/x32-packx/x4-sse.c",
+    "src/x32-transpose/4x4-sse.c",
 ]
 
 ALL_SSE_MICROKERNEL_SRCS = [

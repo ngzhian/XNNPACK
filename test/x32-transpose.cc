@@ -3538,3 +3538,43 @@ TEST(X32_TRANSPOSE__4X4_SCALAR_FLOAT, bh_4_bw_4_is_8_os_8) {
       .Test(xnn_x32_transpose_ukernel__4x4_wasmsimd);
   }
 #endif  // XNN_ARCH_WASMSIMD || XNN_ARCH_WASMRELAXEDSIMD
+
+
+TEST(XX_TRANSPOSE__1XN_MEMCPY_SCALAR, bh_1_bw_1) {
+  for(size_t j = 1; j <= 8; j *= 2) {
+    TransposeMicrokernelTester()
+      .input_stride(1)
+      .block_width(1)
+      .block_height(1)
+      .element_size(j)
+      .Test(xnn_xx_transpose_ukernel__1xN_memcpy_scalar);
+  }
+}
+
+TEST(XX_TRANSPOSE__1XN_MEMCPY_SCALAR, bh_1_8_bw_64) {
+  for(size_t i = 1; i <= 8; ++i) {
+    for(size_t j = 1; j <= 8; j *= 2) {
+      TransposeMicrokernelTester()
+        .input_stride(64)
+        .block_width(64)
+        .block_height(i)
+        .element_size(j)
+        .Test(xnn_xx_transpose_ukernel__1xN_memcpy_scalar);
+    }
+  }
+}
+
+TEST(XX_TRANSPOSE__1XN_MEMCPY_SCALAR, bh_1_8_bw_1_17) {
+  for(size_t i = 1; i <= 8; ++i) {
+    for(size_t j = 1; j <= 17; ++j) {
+      for(size_t k = 1; k <= 8; k *= 2) {
+        TransposeMicrokernelTester()
+          .input_stride(j)
+          .block_width(j)
+          .block_height(i)
+          .element_size(k)
+          .Test(xnn_xx_transpose_ukernel__1xN_memcpy_scalar);
+      }
+    }
+  }
+}

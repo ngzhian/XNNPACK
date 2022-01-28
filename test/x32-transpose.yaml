@@ -28,3 +28,4 @@
 - name: xnn_x32_transpose_ukernel__4x4_reuse_switch_sse2
 - name: xnn_x32_transpose_ukernel__4x4_sse
 - name: xnn_x32_transpose_ukernel__4x4_wasmsimd
+- name: xnn_xx_transpose_ukernel__1xN_memcpy_scalar

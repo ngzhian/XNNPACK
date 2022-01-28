@@ -14,6 +14,16 @@
 extern "C" {
 #endif
 
+#define DECLARE_XX_TRANSPOSEV_UKERNEL_FUNCTION(fn_name) \
+  XNN_INTERNAL void fn_name(const void* input,          \
+                            void* output,               \
+                            size_t input_stride,        \
+                            size_t output_stride,       \
+                            size_t block_width,         \
+                            size_t block_height);
+
+DECLARE_XX_TRANSPOSEV_UKERNEL_FUNCTION(xnn_xx_transpose_ukernel__1xN_memcpy_scalar)
+
 #define DECLARE_X64_TRANSPOSE_UKERNEL_FUNCTION(fn_name) \
   XNN_INTERNAL void fn_name(const uint64_t* input,      \
                             uint64_t* output,           \

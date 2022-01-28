@@ -19,6 +19,14 @@
 
 class TransposeMicrokernelTester {
  public:
+  inline TransposeMicrokernelTester& element_size(size_t element_size) {
+    assert(element_size != 0);
+    this->element_size_ = element_size;
+    return *this;
+  }
+
+  inline size_t element_size() const { return this->element_size_; }
+
   inline TransposeMicrokernelTester& block_height(size_t block_height) {
     assert(block_height != 0);
     this->block_height_ = block_height;
@@ -55,6 +63,30 @@ class TransposeMicrokernelTester {
   }
 
   inline size_t iterations() const { return this->iterations_; }
+
+  void Test(xnn_xx_transposev_ukernel_function transpose) const {
+    std::vector<uint8_t> input(input_stride() * block_height() * element_size() + XNN_EXTRA_BYTES);
+    std::vector<uint8_t> output(input_stride() * block_height() * element_size());
+    std::iota(input.begin(), input.end(), 0);
+    std::fill(output.begin(), output.end(), 0);
+
+    // Call optimized micro-kernel.
+    transpose(input.data(),
+              output.data(),
+              input_stride() * element_size(),
+              element_size(),
+              block_width(),
+              block_height());
+
+    // Verify results.
+    for (size_t c = 0; c < block_width(); c++) {
+      for (size_t r = 0; r < block_height(); r++) {
+        EXPECT_EQ((int)input[c + r * input_stride()], (int)output[c + r * input_stride()])
+            << "at row " << r << " / " << block_height()
+            << ", at column " << c << " / " << block_width();
+      }
+    }
+  }
 
   void Test(xnn_x64_transpose_ukernel_function transpose) const {
     std::vector<uint64_t> input(input_stride() * output_stride() + XNN_EXTRA_BYTES / sizeof(uint64_t));
@@ -161,6 +193,7 @@ class TransposeMicrokernelTester {
   }
 
  private:
+  size_t element_size_ = 1;
   size_t input_stride_ = 1;
   size_t output_stride_ = 1;
   size_t block_height_ = 1;
