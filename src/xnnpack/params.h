@@ -2132,6 +2132,14 @@ typedef void (*xnn_x64_transpose_ukernel_function)(
     size_t block_width,
     size_t block_height);
 
+typedef void (*xnn_xx_transposev_ukernel_function)(
+    const void* a,
+    void* b,
+    size_t input_stride,
+    size_t element_size,
+    size_t block_width,
+    size_t block_height);
+
 typedef void (*xnn_f32_gemm_relu_ukernel_function)(
     size_t mr,
     size_t nr,
@@ -3644,6 +3652,13 @@ struct gemm_fused_ukernels {
   struct xnn_hmp_igemm_ukernel igemm1;
 };
 
+struct transpose_parameters {
+  xnn_x32_transpose_ukernel_function transpose;
+  xnn_x32_transpose_ukernel_function transpose_memcpy;
+  xnn_univector_ukernel_function memcpy;
+  uint8_t blocksize;
+};
+
 struct gemm_parameters {
   struct gemm_fused_ukernels minmax;
   struct gemm_fused_ukernels relu;
@@ -4092,6 +4107,7 @@ struct xnn_parameters {
     struct zip_parameters zip;
     // Depth To Space 2D with CHW->HWC layout conversion.
     struct depthtospace2d_chw2hwc_parameters depthtospace2d_chw2hwc;
+    struct transpose_parameters transpose;
   } x32;
   struct {
     xnn_univector_ukernel_function copy;

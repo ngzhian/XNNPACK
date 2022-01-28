@@ -36,13 +36,65 @@ parser.set_defaults(defines=list())
 def split_ukernel_name(name):
   match = re.match(r"^xnn_(x\d+)_transpose_ukernel__(\d+)x(\d+)_(.+)$", name)
   if match is None:
-    raise ValueError("Unexpected microkernel name: " + name)
+    memcpy_match = re.fullmatch(r"^xnn_xx_transpose_ukernel__(\d+)xN_(.+)$", name)
+    if memcpy_match is None:
+      raise ValueError("Unexpected microkernel name: " + name)
+    tile_height = int(memcpy_match.group(1))
+    arch, isa = xnncommon.parse_target_name(target_name=memcpy_match.group(2))
+    return tile_height, None, arch, isa
   tile_height = int(match.group(2))
   tile_width = int(match.group(3))
 
   arch, isa = xnncommon.parse_target_name(target_name=match.group(4))
   return tile_height, tile_width, arch, isa
 
+
+TRANSPOSE_MEMCPY_TEST_TEMPLATE = """\
+TEST(${TEST_NAME}, bh_${TILE_HEIGHT}_bw_1) {
+  $if ISA_CHECK:
+    ${ISA_CHECK};
+  for(size_t j = 1; j <= 8; j *= 2) {
+    TransposeMicrokernelTester()
+      .input_stride(1)
+      .block_width(1)
+      .block_height(${TILE_HEIGHT})
+      .element_size(j)
+      .Test(${KERNEL});
+  }
+}
+
+TEST(${TEST_NAME}, bh_1_${TILE_HEIGHT * 8}_bw_64) {
+  $if ISA_CHECK:
+    ${ISA_CHECK};
+  for(size_t i = 1; i <= ${TILE_HEIGHT * 8}; ++i) {
+    for(size_t j = 1; j <= 8; j *= 2) {
+      TransposeMicrokernelTester()
+        .input_stride(64)
+        .block_width(64)
+        .block_height(i)
+        .element_size(j)
+        .Test(${KERNEL});
+    }
+  }
+}
+
+TEST(${TEST_NAME}, bh_1_${TILE_HEIGHT * 8}_bw_1_17) {
+  $if ISA_CHECK:
+    ${ISA_CHECK};
+  for(size_t i = 1; i <= ${TILE_HEIGHT * 8}; ++i) {
+    for(size_t j = 1; j <= 17; ++j) {
+      for(size_t k = 1; k <= 8; k *= 2) {
+        TransposeMicrokernelTester()
+          .input_stride(j)
+          .block_width(j)
+          .block_height(i)
+          .element_size(k)
+          .Test(${KERNEL});
+      }
+    }
+  }
+}
+"""
 
 TRANSPOSE_TEST_TEMPLATE = """\
 TEST(${TEST_NAME}, bh_${TILE_HEIGHT}_bw_${TILE_WIDTH}) {
@@ -231,6 +283,28 @@ def generate_test_cases(ukernel, tile_height, tile_width, isa):
           "ISA_CHECK": xnncommon.generate_isa_check_macro(isa),
       })
 
+def generate_memcpy_test_cases(ukernel, tile_height, isa):
+  """Generates all tests cases for a Vector Convert Operation micro-kernel.
+
+  Args:
+    ukernel: C name of the micro-kernel function.
+    tile_height: Number of vertical elements processed by the ukernel.
+    isa: instruction set required to run the micro-kernel. Generated unit test
+      will skip execution if the host processor doesn't support this ISA.
+
+  Returns:
+    Code for the test case.
+  """
+  _, test_name = ukernel.split("_", 1)
+  test_args = [ukernel]
+  return xngen.preprocess(
+      TRANSPOSE_MEMCPY_TEST_TEMPLATE, {
+          "TEST_NAME": test_name.upper().replace("UKERNEL_", ""),
+          "KERNEL": ukernel,
+          "TILE_HEIGHT": tile_height,
+          "ISA_CHECK": xnncommon.generate_isa_check_macro(isa),
+      })
+
 
 def main(args):
   options = parser.parse_args(args)
@@ -268,7 +342,10 @@ def main(args):
       # specification can override architecture
       arch = ukernel_spec.get("arch", arch)
 
-      test_case = generate_test_cases(name, tile_height, tile_width, isa)
+      if tile_width is not None:
+        test_case = generate_test_cases(name, tile_height, tile_width, isa)
+      else:
+        test_case = generate_memcpy_test_cases(name, tile_height, isa)
       tests += "\n\n" + xnncommon.postprocess_test_case(test_case, arch, isa)
 
     txt_changed = True
