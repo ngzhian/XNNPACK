@@ -16,6 +16,12 @@ CMAKE_ARGS=()
 CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Release")
 CMAKE_ARGS+=("-DCMAKE_POSITION_INDEPENDENT_CODE=ON")
 
+# If Ninja is installed, prefer it to Make
+if [ -x "$(command -v ninja)" ]
+then
+  CMAKE_ARGS+=("-GNinja")
+fi
+
 CMAKE_ARGS+=("-DXNNPACK_LIBRARY_TYPE=static")
 
 # We run out of disk space and timeout on Windows, so build less.

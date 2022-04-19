@@ -19,6 +19,8 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v2
+      - name: Install ninja
+        run: choco install ninja
       - name: Configure CMake and build
         run: scripts/build-windows.sh
         shell: bash  # Specify bash so we can reuse the build script on Windows (runs on Git bash)
