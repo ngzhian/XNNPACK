@@ -37,6 +37,9 @@ cd build/local && cmake ../.. \
 if [ "$(uname)" == "Darwin" ]
 then
   cmake --build . -- "-j$(sysctl -n hw.ncpu)"
+elif [[ "$(uname)" =~ "MINGW64" ]]
+then
+  cmake --build . -- "-m:$(nproc)"
 else
   cmake --build . -- "-j$(nproc)"
 fi

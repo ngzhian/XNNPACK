@@ -18,6 +18,7 @@ jobs:
         if: matrix.os != 'windows-latest'
       - name: Configure CMake and build
         run: scripts/${{ matrix.script }}
+        shell: bash  # Specify bash so we can reuse the build script on Windows (runs on Git bash)
         working-directory: ${{ github.workspace }}
   build-xnnpack-cmake-android:
     strategy:
