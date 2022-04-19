@@ -25,8 +25,8 @@ fi
 CMAKE_ARGS+=("-DXNNPACK_LIBRARY_TYPE=static")
 
 # We run out of disk space and timeout on Windows, so build less.
-# CMAKE_ARGS+=("-DXNNPACK_BUILD_BENCHMARKS=ON")
-# CMAKE_ARGS+=("-DXNNPACK_BUILD_TESTS=ON")
+CMAKE_ARGS+=("-DXNNPACK_BUILD_BENCHMARKS=OFF")
+CMAKE_ARGS+=("-DXNNPACK_BUILD_TESTS=OFF")
 
 # Use-specified CMake arguments go last to allow overridding defaults
 CMAKE_ARGS+=($@)
