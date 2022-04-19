@@ -34,5 +34,4 @@ CMAKE_ARGS+=($@)
 cd build/local && cmake ../.. \
     "${CMAKE_ARGS[@]}"
 
-# Cross-platform parallel build
-cmake --build . -- "-m:$(nproc)"
+cmake --build .
