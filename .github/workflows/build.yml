@@ -4,7 +4,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 jobs:
-  build-xnnpack-cmake:
+  build-xnnpack-cmake-tests-only:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
@@ -12,7 +12,17 @@ jobs:
       - name: Install ninja
         run: sudo apt-get install ninja-build
       - name: Configure CMake and build
-        run: scripts/build-local.sh
+        run: scripts/build-local.sh -DXNNPACK_BUILD_TESTS=ON -DXNNPACK_BUILD_BENCHMARKS=OFF
+        working-directory: ${{ github.workspace }}
+  build-xnnpack-cmake-benchmarks-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install ninja
+        run: sudo apt-get install ninja-build
+      - name: Configure CMake and build
+        run: scripts/build-local.sh -DXNNPACK_BUILD_TESTS=OFF -DXNNPACK_BUILD_BENCHMARKS=ON
         working-directory: ${{ github.workspace }}
   build-xnnpack-cmake-windows:
     runs-on: windows-latest
